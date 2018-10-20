@@ -37,7 +37,7 @@ const isNode:boolean = typeof process !== "undefined" && !!process.cwd;
     const buildArgs = (logType:ELogType, args: any[]): any[] => {
       const now: Date = new Date;
       const ms: number = now.getMilliseconds();
-      const timeStamp = `${(new Date).toLocaleString()}.${ms}`;
+      const timeStamp = `${(new Date).toLocaleString()}.${("000" + ms).substr(-3)}`;
       const _isTime = isTime(args);
       const _isFormatted = isFormatted(args);
 
