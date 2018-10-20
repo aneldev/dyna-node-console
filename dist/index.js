@@ -87,40 +87,77 @@ if (isNode) {
     var cd_1 = console.debug;
     var cw_1 = console.warn;
     var ce_1 = console.error;
+    var ELogType = void 0;
+    (function (ELogType) {
+        ELogType["LOG"] = "LOG";
+        ELogType["INFO"] = "INFO";
+        ELogType["DEBUG"] = "DEBUG";
+        ELogType["WARN"] = "WARN";
+        ELogType["ERROR"] = "ERROR";
+        ELogType["TIME"] = "TIME";
+    })(ELogType || (ELogType = {}));
+    var isTime_1 = function (args) { return args[0] === "%s: %sms"; };
+    var isFormatted_1 = function (args) { return args.length > 1 && typeof args[0] === "string" && args[0].indexOf("%") > -1; };
+    var getLabel_1 = function (logType) {
+        switch (logType) {
+            case ELogType.LOG: return '⚫ LOG  ';
+            case ELogType.INFO: return '🔵 INFO ';
+            case ELogType.DEBUG: return '🐞 DEBUG';
+            case ELogType.WARN: return '🔶 WARN ';
+            case ELogType.ERROR: return '🔴 ERROR';
+            case ELogType.TIME: return '⏱ TIME ';
+        }
+    };
+    var buildArgs_1 = function (logType, args) {
+        var now = new Date;
+        var ms = now.getMilliseconds();
+        var timeStamp = (new Date).toLocaleString() + "." + ms;
+        var _isTime = isTime_1(args);
+        var _isFormatted = isFormatted_1(args);
+        if (_isTime)
+            logType = ELogType.TIME;
+        var prefix = getLabel_1(logType) + " " + timeStamp;
+        if (_isFormatted) {
+            return [].concat(prefix + " " + args[0], args.slice(1));
+        }
+        else {
+            return [].concat(prefix, args);
+        }
+    };
     console.log = function () {
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
         }
-        return cl_1.apply(void 0, ["  LOG   " + (new Date).toLocaleString()].concat(args));
+        return cl_1.apply(void 0, buildArgs_1(ELogType.LOG, args));
     };
     console.info = function () {
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
         }
-        return ci_1.apply(void 0, ["i INFO  " + (new Date).toLocaleString()].concat(args));
+        return ci_1.apply(void 0, buildArgs_1(ELogType.INFO, args));
     };
     console.debug = function () {
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
         }
-        return cd_1.apply(void 0, ["> DEBUG " + (new Date).toLocaleString()].concat(args));
+        return cd_1.apply(void 0, buildArgs_1(ELogType.DEBUG, args));
     };
     console.warn = function () {
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
         }
-        return cw_1.apply(void 0, ["! WARN  " + (new Date).toLocaleString()].concat(args));
+        return cw_1.apply(void 0, buildArgs_1(ELogType.WARN, args));
     };
     console.error = function () {
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
         }
-        return ce_1.apply(void 0, ["X ERROR " + (new Date).toLocaleString()].concat(args));
+        return ce_1.apply(void 0, buildArgs_1(ELogType.ERROR, args));
     };
 }
 
