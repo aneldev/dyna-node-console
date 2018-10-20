@@ -115,7 +115,7 @@ var isNode = typeof process !== "undefined" && !!process.cwd;
         var buildArgs_1 = function (logType, args) {
             var now = new Date;
             var ms = now.getMilliseconds();
-            var timeStamp = (new Date).toLocaleString() + "." + ms;
+            var timeStamp = (new Date).toLocaleString() + "." + ("000" + ms).substr(-3);
             var _isTime = isTime_1(args);
             var _isFormatted = isFormatted_1(args);
             if (_isTime)
