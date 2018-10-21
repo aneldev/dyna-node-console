@@ -132,11 +132,13 @@ var isNode = typeof process !== "undefined" && !!process.cwd;
                 case ELogType.TIME: return chalk_1.default.green;
             }
         };
-        // const color = (args:)
         var colorArgs_1 = function (logType, args) {
             var colorMethod = getColorMethod_1(logType);
             return args.map(function (arg) {
-                if (typeof arg === "string")
+                if (typeof arg === "string" ||
+                    typeof arg === "number" ||
+                    typeof arg === "boolean" ||
+                    arg instanceof Date)
                     return colorMethod(arg);
                 return arg;
             });
