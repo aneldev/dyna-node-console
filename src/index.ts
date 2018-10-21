@@ -1,3 +1,5 @@
+import chalk from "chalk";
+
 const isNode:boolean = typeof process !== "undefined" && !!process.cwd;
 
 (()=>{
@@ -34,23 +36,52 @@ const isNode:boolean = typeof process !== "undefined" && !!process.cwd;
       }
     };
 
+    const getColorMethod = (logType:ELogType): any => {
+      switch (logType) {
+        case ELogType.LOG: return (text:string) => text;
+        case ELogType.INFO: return chalk.blueBright;
+        case ELogType.DEBUG: return chalk.blue;
+        case ELogType.WARN: return chalk.yellow;
+        case ELogType.ERROR: return chalk.red;
+        case ELogType.TIME: return chalk.green;
+      }
+    };
+
+    const colorArgs = (logType: ELogType, args: any[]): any[] => {
+      const colorMethod: any = getColorMethod(logType);
+      return args.map((arg: any) => {
+        if (
+          typeof arg === "string" ||
+          typeof arg === "number" ||
+          typeof arg === "boolean" ||
+          arg instanceof Date
+        ) return colorMethod(arg);
+        return arg;
+      });
+    };
+
     const buildArgs = (logType:ELogType, args: any[]): any[] => {
       const now: Date = new Date;
       const ms: number = now.getMilliseconds();
       const timeStamp = `${(new Date).toLocaleString()}.${("000" + ms).substr(-3)}`;
       const _isTime = isTime(args);
       const _isFormatted = isFormatted(args);
+      let output: any[];
 
-      if (_isTime) logType=ELogType.TIME;
+      if (_isTime) logType = ELogType.TIME;
 
       let prefix: string = `${getLabel(logType)} ${timeStamp}`;
 
       if (_isFormatted) {
-        return [].concat(`${prefix} ${args[0]}`, args.slice(1))
+        output = [].concat(`${prefix} ${args[0]}`, args.slice(1))
       }
       else {
-        return [].concat(prefix, args);
+        output = [].concat(prefix, args);
       }
+
+      output = colorArgs(logType, output);
+
+      return output;
     };
 
     console.log = (...args): void => cl(...buildArgs(ELogType.LOG, args));

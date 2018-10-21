@@ -1,13 +1,13 @@
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory();
+		module.exports = factory(require("chalk"));
 	else if(typeof define === 'function' && define.amd)
-		define("dyna-node-console", [], factory);
+		define("dyna-node-console", ["chalk"], factory);
 	else if(typeof exports === 'object')
-		exports["dyna-node-console"] = factory();
+		exports["dyna-node-console"] = factory(require("chalk"));
 	else
-		root["dyna-node-console"] = factory();
-})(this, function() {
+		root["dyna-node-console"] = factory(root["chalk"]);
+})(this, function(__WEBPACK_EXTERNAL_MODULE_0__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -73,13 +73,23 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "/dist/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 1);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
 /***/ (function(module, exports) {
 
+module.exports = require("chalk");
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var chalk_1 = __webpack_require__(0);
 var isNode = typeof process !== "undefined" && !!process.cwd;
 (function () {
     if (isNode) {
@@ -112,21 +122,43 @@ var isNode = typeof process !== "undefined" && !!process.cwd;
                 case ELogType.TIME: return '⏱ TIME ';
             }
         };
+        var getColorMethod_1 = function (logType) {
+            switch (logType) {
+                case ELogType.LOG: return function (text) { return text; };
+                case ELogType.INFO: return chalk_1.default.blueBright;
+                case ELogType.DEBUG: return chalk_1.default.blue;
+                case ELogType.WARN: return chalk_1.default.yellow;
+                case ELogType.ERROR: return chalk_1.default.red;
+                case ELogType.TIME: return chalk_1.default.green;
+            }
+        };
+        // const color = (args:)
+        var colorArgs_1 = function (logType, args) {
+            var colorMethod = getColorMethod_1(logType);
+            return args.map(function (arg) {
+                if (typeof arg === "string")
+                    return colorMethod(arg);
+                return arg;
+            });
+        };
         var buildArgs_1 = function (logType, args) {
             var now = new Date;
             var ms = now.getMilliseconds();
             var timeStamp = (new Date).toLocaleString() + "." + ("000" + ms).substr(-3);
             var _isTime = isTime_1(args);
             var _isFormatted = isFormatted_1(args);
+            var output;
             if (_isTime)
                 logType = ELogType.TIME;
             var prefix = getLabel_1(logType) + " " + timeStamp;
             if (_isFormatted) {
-                return [].concat(prefix + " " + args[0], args.slice(1));
+                output = [].concat(prefix + " " + args[0], args.slice(1));
             }
             else {
-                return [].concat(prefix, args);
+                output = [].concat(prefix, args);
             }
+            output = colorArgs_1(logType, output);
+            return output;
         };
         console.log = function () {
             var args = [];
