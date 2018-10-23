@@ -1,13 +1,13 @@
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("chalk"));
+		module.exports = factory(require("chalk"), require("os"));
 	else if(typeof define === 'function' && define.amd)
-		define("dyna-node-console", ["chalk"], factory);
+		define("dyna-node-console", ["chalk", "os"], factory);
 	else if(typeof exports === 'object')
-		exports["dyna-node-console"] = factory(require("chalk"));
+		exports["dyna-node-console"] = factory(require("chalk"), require("os"));
 	else
-		root["dyna-node-console"] = factory(root["chalk"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_0__) {
+		root["dyna-node-console"] = factory(root["chalk"], root["os"]);
+})(this, function(__WEBPACK_EXTERNAL_MODULE_0__, __WEBPACK_EXTERNAL_MODULE_1__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "/dist/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ 	return __webpack_require__(__webpack_require__.s = 2);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -84,6 +84,12 @@ module.exports = require("chalk");
 
 /***/ }),
 /* 1 */
+/***/ (function(module, exports) {
+
+module.exports = require("os");
+
+/***/ }),
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -91,6 +97,7 @@ module.exports = require("chalk");
 Object.defineProperty(exports, "__esModule", { value: true });
 var chalk_1 = __webpack_require__(0);
 var isNode = typeof process !== "undefined" && !!process.cwd;
+var eol = __webpack_require__(1).EOL;
 (function () {
     if (isNode) {
         if (process._dynaNodeConsole)
@@ -143,7 +150,21 @@ var isNode = typeof process !== "undefined" && !!process.cwd;
                 return arg;
             });
         };
+        var breakLines = function (args) {
+            return args.reduce(function (acc, arg) {
+                if (typeof arg === "string") {
+                    acc = acc.concat(arg.split(eol));
+                }
+                else if (typeof arg === "object") {
+                    acc = acc.concat(JSON.stringify(arg, null, 2).split(eol));
+                }
+                else
+                    acc.push(arg);
+                return acc;
+            }, []);
+        };
         var buildArgs_1 = function (logType, args) {
+            // args = breakLines(args);
             var now = new Date;
             var ms = now.getMilliseconds();
             var timeStamp = (new Date).toLocaleString() + "." + ("000" + ms).substr(-3);

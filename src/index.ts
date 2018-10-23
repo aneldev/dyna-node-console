@@ -1,6 +1,7 @@
 import chalk from "chalk";
 
 const isNode:boolean = typeof process !== "undefined" && !!process.cwd;
+const eol: string = require('os').EOL;
 
 (()=>{
   if (isNode){
@@ -60,7 +61,20 @@ const isNode:boolean = typeof process !== "undefined" && !!process.cwd;
       });
     };
 
+    const breakLines = (args: any[]): any[] => {
+      return args.reduce((acc: any[], arg: any) => {
+        if (typeof arg === "string") {
+          acc = acc.concat(arg.split(eol));
+        } else if (typeof arg ==="object") {
+          acc = acc.concat(JSON.stringify(arg, null, 2).split(eol));
+        } else
+          acc.push(arg);
+        return acc;
+      }, []);
+    };
+
     const buildArgs = (logType:ELogType, args: any[]): any[] => {
+      args = breakLines(args);
       const now: Date = new Date;
       const ms: number = now.getMilliseconds();
       const timeStamp = `${(new Date).toLocaleString()}.${("000" + ms).substr(-3)}`;
